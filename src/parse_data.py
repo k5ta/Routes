@@ -1,11 +1,10 @@
-import json
+from json import loads, dumps
 from collections import namedtuple
 
 
 def decode_data(data):
-    conditions = json.loads(data, object_hook=lambda l: namedtuple('X', l.keys())(*l.values()))
-    return conditions
+    return loads(data, object_hook=lambda l: namedtuple('X', l.keys())(*l.values()))
 
 
 def encode_data(solution):
-    return json.dumps(solution._asdict(), indent=4, separators=(',', ': '))
+    return dumps(solution._asdict(), indent=4)
