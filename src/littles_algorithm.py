@@ -50,6 +50,7 @@ def small_matrix_answer(full_matrix, answers):
 
 def prepare_matrix(matrix):
     # make sure that there won't be premature cycles and fix matrix, if it could be
+    # (because it works and is easier, than make it when remove row and col)
     for i in range(len(matrix)):
         if max(matrix[i]) != float("Inf"):
             for j in range(len(matrix)):

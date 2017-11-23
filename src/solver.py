@@ -2,7 +2,12 @@ import src.working_with_files as files
 import src.parse_data as parser
 import src.data_validation as validation
 import src.littles_algorithm as algo
+import src.brute_force as brute
 from json.decoder import JSONDecodeError
+
+
+class Constants:
+    MAX_FOR_FULL_SEARCH = 8
 
 
 def solve_problem(input_file, output_file):
@@ -17,8 +22,7 @@ def solve_problem(input_file, output_file):
     except validation.ParsingDataError as e:
         print(e.what)
         return
-    solution = calculate_solution(conditions)
-    create_answer(output_file, solution)
+    create_answer(output_file, calculate_solution(conditions))
 
 
 def init_data(input_file):
@@ -28,6 +32,8 @@ def init_data(input_file):
 
 
 def calculate_solution(conditions):
+    if len(conditions.vertices) <= Constants.MAX_FOR_FULL_SEARCH:
+        return brute.get_exact_solution(conditions)
     return algo.get_solution(conditions)
 
 
