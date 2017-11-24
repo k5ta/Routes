@@ -1,13 +1,19 @@
 import itertools
 import src.parse_data as parser
+from src.route_time_helper import calc_time
 
 
 def get_exact_solution(conditions):
     min_route = full_search(conditions.graph, conditions.vertices, conditions.initial)
     solution = parser.decode_data('{ "bypass": [] }')
     solution.bypass.append({conditions.initial: conditions.time})
-    solution.bypass.extend(min_route)
-    print(solution)
+    for i in range(1, len(min_route)):
+        last_time = list(solution.bypass[-1].values())[0]
+        solution.bypass.append({conditions.vertices[min_route[i]]:
+                                calc_time(last_time, conditions.graph[min_route[i - 1]][min_route[i]])})
+    solution.bypass.append({conditions.initial:
+                            calc_time(list(solution.bypass[-1].values())[0],
+                                      conditions.graph[min_route[-1]][min_route[0]])})
     return solution
 
 

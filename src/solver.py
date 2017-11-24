@@ -7,7 +7,7 @@ from json.decoder import JSONDecodeError
 
 
 class Constants:
-    MAX_FOR_FULL_SEARCH = 8
+    MAX_FOR_FULL_SEARCH = 1
 
 
 def solve_problem(input_file, output_file):
