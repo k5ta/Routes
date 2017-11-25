@@ -15,8 +15,7 @@ def get_solution(conditions):
     solution = parser.decode_data('{ "bypass": [] }')
     solution.bypass.append({conditions.initial: conditions.time})
     answers = calculate(conditions)
-    get_best_answer(answers, solution, conditions)
-    return solution
+    return get_best_answer(answers, solution, conditions)
 
 
 def get_best_answer(answers, solution, conditions):

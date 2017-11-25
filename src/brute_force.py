@@ -28,7 +28,7 @@ def full_search(matrix, vertices, initial):
     permutations = itertools.permutations(indexes)
     variants = []
     for each in permutations:
-        variants.append((initial_index, each[0], each[1]))
+        variants.append((initial_index, *each))
     min_length = float("Inf")
     min_route = None
     for each in variants:
