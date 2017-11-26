@@ -17,14 +17,14 @@ def check_data(data):
 def check_initials(data):
     if not data.initial:
         return "wrong initial vertex"
-    elif not match(r"\d{2}:\d{2}$", data.time):
+    elif not data.time or not match(r"^(\d*-)?\d{2}:\d{2}$", data.time):
         return "wrong initial time"
     elif not isinstance(data.clients, list):
         return "wrong clients array"
-    elif not isinstance(data.vertices, list):
-        return "wrong vertices array"
     elif len(data.clients) == 0:
         return "the clients array shouldn't be empty"
+    elif not isinstance(data.vertices, list):
+        return "wrong vertices array"
     elif len(data.clients) != len(data.vertices) - 1:
         return "the length of the clients array should be 1 less than the length of the vertices array"
 
@@ -39,18 +39,16 @@ def check_matrix(data):
     for row in data.graph:
         if len(row) != len(data.vertices):
             return "the length of each row of the matrix must be equal to the length of the vertices array"
-    error_string = check_matrix_values(data.graph)
-    if error_string:
-        return error_string
+    return check_matrix_values(data.graph)
 
 
+# also sets Inf values on the diagonal
 def check_matrix_values(matrix):
     for i in range(len(matrix)):
         for j in range(len(matrix[i])):
             if i == j:
                 matrix[i][j] = float("Inf")
-            elif matrix[i][j] < 0:
+            elif type(matrix[i][j]) == int and matrix[i][j] < 0:
                 return "the distance between the vertices must be non-negative"
-            elif not match(r"^\d{1,2}(:\d{2})?$", str(matrix[i][j])):
+            elif not match(r"^((\d*-)?\d{1,2}:)?\d{1,2}$", str(matrix[i][j])):
                 return "wrong time format in the matrix"
-    return ""

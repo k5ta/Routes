@@ -22,7 +22,9 @@ def solve_problem(input_file, output_file):
     except validation.ParsingDataError as e:
         print(e.what)
         return
+    print("Calculating...", end=" ")
     create_answer(output_file, calculate_solution(conditions))
+    print("Done!")
 
 
 def init_data(input_file):

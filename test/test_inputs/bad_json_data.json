@@ -1,0 +1,9 @@
+{
+    "initial": "g",
+    "time": "10000",
+    "clients": ["a"],
+    "vertices": ["a", "b", "c"],
+    "graph": [
+        ["inf", 12, 22]
+    ]
+}

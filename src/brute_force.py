@@ -39,8 +39,8 @@ def full_search(matrix, vertices, initial):
     return min_route
 
 
-def get_route_length(matrix, vertices):
+def get_route_length(matrix, vertices_to_visit):
     route_length = 0
-    for i in range(len(vertices) - 1):
-        route_length = route_length + matrix[vertices[i]][vertices[i + 1]]
-    return route_length + matrix[vertices[-1]][vertices[0]]
+    for i in range(len(vertices_to_visit) - 1):
+        route_length = route_length + matrix[vertices_to_visit[i]][vertices_to_visit[i + 1]]
+    return route_length + matrix[vertices_to_visit[-1]][vertices_to_visit[0]]

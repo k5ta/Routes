@@ -37,24 +37,22 @@ def calculate(data):
 
 def matrix_iteration(initial_matrix, answers):
     if len(initial_matrix.matrix) < 2:
-        small_matrix_answer(initial_matrix, answers)
-    else:
-        full_matrix = copy.deepcopy(initial_matrix)
-        prepare_matrix(full_matrix)
-        answers = matrix_shrink(full_matrix, find_zeros(full_matrix.matrix), answers)
-    return answers
+        return small_matrix_answer(initial_matrix, answers)
+    full_matrix = copy.deepcopy(initial_matrix)
+    prepare_matrix(full_matrix)
+    return matrix_shrink(full_matrix, find_zeros(full_matrix.matrix), answers)
 
 
 def small_matrix_answer(full_matrix, answers):
     if full_matrix.matrix[0][0] == float("Inf"):
         answers = []
-        return
+        return answers
     solution = {full_matrix.rows[0]: full_matrix.cols[0]}
-    if not answers:
-        answers = solution
-        return
     for answer in answers:
         answer.update(solution)
+    if not answers:
+        answers = [solution]
+    return answers
 
 
 def prepare_matrix(full_matrix):
