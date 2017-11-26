@@ -24,21 +24,19 @@ class TestLittlesAlgorithm(unittest.TestCase):
         [10, 100, float("Inf")],
     ]
 
-    def test_solutions(self):
+    def test_best_answer_and_solutions(self):
         solution = get_solution_template()
         solution.bypass.extend([{"a": "00:00"}, {"b": "00:05"}, {"c": "00:20"}, {"a": "00:30"}])
         # with such conditions, the algorithm gives an unambiguous result
         self.assertEqual(algo.get_solution(self.conditions), solution)
-
-    def test_best_answer(self):
-        self.assertEqual(1, 1)
+        solution_template = get_solution_template()
+        solution_template.bypass.extend([{"a": "00:00"}])
+        answers = [{0: 1, 1: 2, 2: 0, 'additive_time': 30}, {0: 2, 2: 1, 1: 0, 'additive_time': 300}]
+        self.assertEqual(algo.get_best_answer(answers, solution_template, self.conditions), solution)
 
     def test_calculate(self):
         some_answer = [{0: 1, 1: 2, 2: 0, 'additive_time': 30}, {0: 1, 1: 2, 2: 0, 'additive_time': 30}]
         self.assertEqual(algo.calculate(self.conditions), some_answer)
-
-    def test_matrix_iteration(self):
-        self.assertEqual(1, 1)
 
     def test_small_matrix(self):
         full_matrix = SomeObject()
@@ -81,18 +79,13 @@ class TestLittlesAlgorithm(unittest.TestCase):
         ])
         self.assertEqual(full_matrix.additive_time, 1)
 
-    def test_find_zeros_and_calculate_coeffs(self):
+    def test_zeros_and_coefficients(self):
         some_matrix = [
-            [0, 1, 1],
-            [2, 2, 2],
-            [3, 0, 0],
+            [float("Inf"), 0, 0],
+            [2, float("Inf"), 2],
+            [3, 0, float("Inf")],
         ]
         zeros = algo.find_zeros(some_matrix)
-        self.assertEqual(zeros, [(0, 0), (2, 1), (2, 2)])
-        self.assertEqual(algo.calculate_coefficients(some_matrix, zeros), [(3, (0, 0)), (1, (2, 1)), (1, (2, 2))])
-
-    def test_matrix_shrink(self):
-        self.assertEqual(1, 1)
-
-    def test_shrink_and_add(self):
-        self.assertEqual(1, 1)
+        self.assertEqual(zeros, [(0, 1), (0, 2), (2, 1)])
+        coefficients = algo.calculate_coefficients(some_matrix, zeros)
+        self.assertEqual(coefficients, [(0, (0, 1)), (2, (0, 2)), (3, (2, 1))])

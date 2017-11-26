@@ -11,5 +11,5 @@ class TestInitData(unittest.TestCase):
             self.assertRaises(FileNotFoundError, solver.init_data, filename)
 
     def test_bad_json_format(self):
-        filename = "./test_inputs/bad_json_format.json"
+        filename = "./test_inputs/bad_json_format.dat"
         self.assertRaises(JSONDecodeError, solver.init_data, filename)
