@@ -78,4 +78,4 @@ class TestDataValidation(unittest.TestCase):
 
         self.conditions.graph[0][2] = "some string"
         self.assertEqual(validation.check_matrix_values(self.conditions.graph),
-                         "wrong time format in the matrix")
+                         "wrong time format in the matrix. Please, set all distances in minutes")

@@ -50,5 +50,5 @@ def check_matrix_values(matrix):
                 matrix[i][j] = float("Inf")
             elif type(matrix[i][j]) == int and matrix[i][j] < 0:
                 return "the distance between the vertices must be non-negative"
-            elif not match(r"^((\d*-)?\d{1,2}:)?\d{1,2}$", str(matrix[i][j])):
-                return "wrong time format in the matrix"
+            elif not match(r"^\d+$", str(matrix[i][j])):
+                return "wrong time format in the matrix. Please, set all distances in minutes"
