@@ -55,6 +55,7 @@
 
 Для запуска тестов в папке test выполнить
 >PYTHONPATH=../ python -m unittest *.py [-v="подробный вывод"]
+
 Либо же запустить скрипт (работает в linux или терминале mingw под Windows)
 >./run_tests.sh
 
