@@ -14,12 +14,11 @@ class FullMatrix:
 def get_solution(conditions):
     solution = parser.decode_data('{ "bypass": [] }')
     solution.bypass.append({conditions.initial: conditions.time})
-    answers = calculate(conditions)
-    return get_best_answer(answers, solution, conditions)
+    answer = calculate(conditions)
+    return get_answer(answer, solution, conditions)
 
 
-def get_best_answer(answers, solution, conditions):
-    answer = min(answers, key=lambda l: l['additive_time'])
+def get_answer(answer, solution, conditions):
     previous = conditions.vertices.index(conditions.initial)
     prev_time = list(solution.bypass[-1].values())[0]
     for i in range(len(answer) - 1):
@@ -32,27 +31,54 @@ def get_best_answer(answers, solution, conditions):
 
 def calculate(data):
     return matrix_iteration(FullMatrix(data.graph, list(range(len(data.vertices))),
-                                       list(range(len(data.vertices)))), [])
+                                       list(range(len(data.vertices)))), {"current_bound": float("Inf")})
 
 
-def matrix_iteration(initial_matrix, answers):
+def matrix_iteration(initial_matrix, answer):
     if len(initial_matrix.matrix) < 2:
-        return small_matrix_answer(initial_matrix, answers)
-    full_matrix = copy.deepcopy(initial_matrix)
-    prepare_matrix(full_matrix)
-    return matrix_shrink(full_matrix, find_zeros(full_matrix.matrix), answers)
+        solution = small_matrix_answer(initial_matrix)
+        if solution and solution['current_bound'] < answer['current_bound']:
+            answer.update(solution)
+            return answer
+    prepare_matrix(initial_matrix)
+    if initial_matrix.additive_time >= answer['current_bound']:
+        return {}
+    return matrix_shrink(initial_matrix, find_zeros(initial_matrix.matrix), answer)
 
 
-def small_matrix_answer(full_matrix, answers):
+def matrix_shrink(full_matrix, zeros, answer):
+    coefficients = calculate_coefficients(full_matrix.matrix, zeros)
+    max_coefficient = max(coefficients, key=lambda l: l[0])
+    to_remove = [max_coefficient]
+    for coefficient in coefficients:
+        if coefficient[0] == max_coefficient[0] and coefficient != max_coefficient:
+            to_remove.append(coefficient)
+    for remove in to_remove:
+        matrix = full_matrix if len(to_remove) == 1 else copy.deepcopy(full_matrix)
+        iteration_answer = shrink_and_add(matrix, remove, answer)
+        if iteration_answer and iteration_answer['current_bound'] < answer['current_bound']:
+            answer = iteration_answer
+    return answer
+
+
+def shrink_and_add(full_matrix, remove, answer):
+    copy_matrix = full_matrix
+    new_answer = {copy_matrix.rows[remove[1][0]]: copy_matrix.cols[remove[1][1]]}
+    new_answer.update(answer)
+    del (copy_matrix.matrix[remove[1][0]])
+    for row in copy_matrix.matrix:
+        del (row[remove[1][1]])
+    del (copy_matrix.rows[remove[1][0]])
+    del (copy_matrix.cols[remove[1][1]])
+    return matrix_iteration(copy_matrix, new_answer)
+
+
+def small_matrix_answer(full_matrix):
     if full_matrix.matrix[0][0] == float("Inf"):
-        answers = []
-        return answers
-    solution = {full_matrix.rows[0]: full_matrix.cols[0]}
-    for answer in answers:
-        answer.update(solution)
-    if not answers:
-        answers = [solution]
-    return answers
+        return {}
+    solution = dict({full_matrix.rows[0]: full_matrix.cols[0]})
+    solution['current_bound'] = full_matrix.additive_time + full_matrix.matrix[0][0]
+    return solution
 
 
 def prepare_matrix(full_matrix):
@@ -87,41 +113,34 @@ def prepare_matrix(full_matrix):
 
 def find_zeros(matrix):
     zeros = []
+    matrix_symmetry = check_symmetric(matrix)
     for i in range(len(matrix)):
         for j in range(len(matrix[i])):
-            if matrix[i][j] == 0:
+            if matrix[i][j] == 0 and should_add_zero(matrix_symmetry, len(matrix), i, j):
                 zeros.append((i, j))
     return zeros
 
 
-def matrix_shrink(full_matrix, zeros, answers):
-    coefficients = calculate_coefficients(full_matrix.matrix, zeros)
-    max_coefficient = max(coefficients, key=lambda l: l[0])
-    to_remove = [max_coefficient]
-    for coefficient in coefficients:
-        if coefficient[0] == max_coefficient[0] and coefficient != max_coefficient:
-            to_remove.append(coefficient)
-    new_answers = []
-    for remove in to_remove:
-        new_answers.extend(shrink_and_add(full_matrix, remove, answers))
-    return new_answers
+def check_symmetric(matrix):
+    direction = "no"
+    if matrix[0][0] == float("Inf"):
+        direction = "from_left"
+    elif matrix[0][len(matrix)-1] == float("Inf"):
+        direction = "from_right"
+    for i in range(len(matrix)):
+        for j in range(len(matrix)):
+            if matrix[i][j - i] != matrix[j - i][i]:
+                return "no"
+    return direction
 
 
-def shrink_and_add(full_matrix, remove, answers):
-    copy_answers = copy.deepcopy(answers)
-    copy_matrix = copy.deepcopy(full_matrix)
-    if not copy_answers:
-        copy_answers = [{'additive_time': 0, copy_matrix.rows[remove[1][0]]: copy_matrix.cols[remove[1][1]]}]
-    else:
-        for answer in copy_answers:
-            answer[copy_matrix.rows[remove[1][0]]] = copy_matrix.cols[remove[1][1]]
-            answer['additive_time'] = copy_matrix.additive_time
-    del (copy_matrix.matrix[remove[1][0]])
-    for row in copy_matrix.matrix:
-        del (row[remove[1][1]])
-    del (copy_matrix.rows[remove[1][0]])
-    del (copy_matrix.cols[remove[1][1]])
-    return matrix_iteration(copy_matrix, copy_answers)
+def should_add_zero(symmetry_type, matrix_len, i, j):
+    if symmetry_type == "no":
+        return True
+    if symmetry_type == "from_left" and j > i:
+        return True
+    if symmetry_type == "from_right" and i + j < matrix_len:
+        return True
 
 
 def calculate_coefficients(matrix, zeros):

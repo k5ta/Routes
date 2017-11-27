@@ -31,11 +31,11 @@ class TestLittlesAlgorithm(unittest.TestCase):
         self.assertEqual(algo.get_solution(self.conditions), solution)
         solution_template = get_solution_template()
         solution_template.bypass.extend([{"a": "00:00"}])
-        answers = [{0: 1, 1: 2, 2: 0, 'additive_time': 30}, {0: 2, 2: 1, 1: 0, 'additive_time': 300}]
-        self.assertEqual(algo.get_best_answer(answers, solution_template, self.conditions), solution)
+        answers = {0: 1, 1: 2, 2: 0, 'current_bound': 30}
+        self.assertEqual(algo.get_answer(answers, solution_template, self.conditions), solution)
 
     def test_calculate(self):
-        some_answer = [{0: 1, 1: 2, 2: 0, 'additive_time': 30}, {0: 1, 1: 2, 2: 0, 'additive_time': 30}]
+        some_answer = {0: 1, 1: 2, 2: 0, 'current_bound': 30}
         self.assertEqual(algo.calculate(self.conditions), some_answer)
 
     def test_small_matrix(self):
@@ -43,13 +43,12 @@ class TestLittlesAlgorithm(unittest.TestCase):
         full_matrix.rows = ["a"]
         full_matrix.cols = ["b"]
         full_matrix.matrix = [[float("Inf")]]
-        answers = algo.small_matrix_answer(full_matrix, [])
-        self.assertEqual(answers, [])
+        full_matrix.additive_time = 0
+        answer = algo.small_matrix_answer(full_matrix)
+        self.assertEqual(answer, {})
         full_matrix.matrix = [[10]]
-        answers = algo.small_matrix_answer(full_matrix, [])
-        self.assertEqual(answers, [{"a": "b"}])
-        answers = algo.small_matrix_answer(full_matrix, [{"b": "a"}])
-        self.assertEqual(answers, [{"a": "b", "b": "a"}])
+        answer = algo.small_matrix_answer(full_matrix)
+        self.assertEqual(answer, {"a": "b", 'current_bound': 10})
 
     def test_prepare_matrix(self):
         full_matrix = SomeObject()

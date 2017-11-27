@@ -25,6 +25,7 @@ class TestSolver(unittest.TestCase):
     def test_create_answer(self):
         answer = solver.calculate_solution(solver.init_data("test_inputs/test_1.dat"))
         solver.create_answer("temp.ans", answer)
+        # check answebecause of the permutations it is determined uniquely
         self.assertTrue(filecmp.cmp("test_outputs/test_1.ans", "temp.ans", shallow=False))
 
     def test_solve_problem(self):
