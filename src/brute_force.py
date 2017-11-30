@@ -26,16 +26,14 @@ def full_search(matrix, vertices, initial):
         else:
             initial_index = i
     permutations = itertools.permutations(indexes)
-    variants = []
-    for each in permutations:
-        variants.append((initial_index, *each))
     min_length = float("Inf")
     min_route = None
-    for each in variants:
-        current_length = get_route_length(matrix, each)
+    for each in permutations:
+        current_route = [initial_index, *each]
+        current_length = get_route_length(matrix, current_route)
         if min_length > current_length:
             min_length = current_length
-            min_route = each
+            min_route = current_route
     return min_route
 
 
